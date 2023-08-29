@@ -19,9 +19,15 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-import Atividade from 'App/Models/Atividade'
-
+import AtividadesController from 'App/Controllers/Http/AtividadesController'
 Route.get('/', async () => {
-  const ativ = await Atividade.all()
-  return ativ
+  return "campus360"
+})
+
+Route.get('/atividades', async (ctx) => {
+  return new AtividadesController().index(ctx)
+})
+
+Route.post('/atividades/store', async (ctx) => {
+  return new AtividadesController().store(ctx)
 })

@@ -16,8 +16,6 @@ export default class AtividadesController {
     const data = request.only(["nome","descricao","data", "local", "tipo","livre" ])
     const ativi = await Atividade.create(data)
     return ativi
-  
-
   }
 
   public async show({}: HttpContextContract) {}

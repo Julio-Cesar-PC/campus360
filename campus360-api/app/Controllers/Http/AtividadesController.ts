@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Atividade from 'App/Models/Atividade'
+import Atividade from 'App/Models/Atividade'
 
 export default class AtividadesController {
   public async index({}: HttpContextContract) {
@@ -24,5 +25,10 @@ export default class AtividadesController {
 
   public async update({}: HttpContextContract) {}
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({params,Response}: HttpContextContract) {
+      const atividadeId = Number(params.id)
+      const Atividade = await Atividade.find(atividadeId)
+
+      return Response.status(200).json({MessageChannel:'Atividade excluida com sucesso'})
+  }
 }

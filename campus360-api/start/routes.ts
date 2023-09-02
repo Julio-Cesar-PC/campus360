@@ -31,3 +31,5 @@ Route.get('/atividades', async (ctx) => {
 Route.post('/atividades/store', async (ctx) => {
   return new AtividadesController().store(ctx)
 })
+
+Route.delete('/atividades/destroy/:id', 'AtividadesController.destroy')

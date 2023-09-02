@@ -31,6 +31,9 @@ Route.get('/atividades', async (ctx) => {
 Route.post('/atividades/store', async (ctx) => {
   return new AtividadesController().store(ctx)
 })
+Route.delete('/atividades/destroy/:id', async (ctx) => {
+  return new AtividadesController().destroy(ctx)
+})
+// Route.delete('/atividades/destroy/:id','AtividadesController.destroy')
 
-Route.delete('/atividades/destroy/:id', 'AtividadesController.destroy')
-Route.put('/atividades/update/:id', 'AtividadesController.update')
+Route.put('/atividades/update/:id','AtividadesController.update')

@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Atividade from 'App/Models/Atividade'
-import Atividade from 'App/Models/Atividade'
+
 
 export default class AtividadesController {
   public async index({}: HttpContextContract) {
@@ -17,28 +17,34 @@ export default class AtividadesController {
     const data = request.only(["nome","descricao","data", "local", "tipo","livre" ])
     const ativi = await Atividade.create(data)
     return ativi
+  
+
   }
 
-  public async show({}: HttpContextContract) {}
-
+  public async show({params}: HttpContextContract) {
+    const atividadeId = Number(params.id)
+    const atividade = await Atividade.findOrFail(atividadeId)
+      return atividade
+  }
   public async edit({}: HttpContextContract) {}
 
   public async update({request,params}: HttpContextContract) {
     const data = request.only(["nome","descricao","data", "local", "tipo","livre" ])
     const atividadeId = Number(params.id)
-    const Atividade = await Atividade.find(atividadeId)
+    const atividade = await Atividade.findOrFail(atividadeId)
+    console.log(atividade,'Atividade nao encontrada')
 
-    await Atividade.merge{data}.save
-      return Atividade 
-
-
-
+    atividade.merge(data)
+    await atividade.save()
+    return atividade
   }
 
-  public async destroy({params,Response}: HttpContextContract) {
+  public async destroy({params,response}: HttpContextContract) {
       const atividadeId = Number(params.id)
-      const Atividade = await Atividade.find(atividadeId)
+      const atividade = await Atividade.findOrFail(atividadeId)
 
-      return Response.status(200).json({MessageChannel:'Atividade excluida com sucesso'})
+       await atividade.delete()
+
+        return response.status(200).json({message: 'Atividade deletada com sucesso'})
   }
 }

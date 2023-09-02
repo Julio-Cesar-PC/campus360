@@ -23,7 +23,17 @@ export default class AtividadesController {
 
   public async edit({}: HttpContextContract) {}
 
-  public async update({}: HttpContextContract) {}
+  public async update({request,params}: HttpContextContract) {
+    const data = request.only(["nome","descricao","data", "local", "tipo","livre" ])
+    const atividadeId = Number(params.id)
+    const Atividade = await Atividade.find(atividadeId)
+
+    await Atividade.merge{data}.save
+      return Atividade 
+
+
+
+  }
 
   public async destroy({params,Response}: HttpContextContract) {
       const atividadeId = Number(params.id)

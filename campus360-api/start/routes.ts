@@ -24,6 +24,24 @@ Route.get('/', async () => {
   return "campus360"
 })
 
+Route.post('/login', async ({request, auth}) => {
+  const {email, password} = request.all()
+  try {
+    const token = await auth.use('api').attempt(email, password)
+    return token
+  } catch (error) {
+    return error
+  }
+})
+
+Route.post('/logout', async ({ auth, response }) => {
+  await auth.use('api').revoke()
+  return {
+    revoked: true
+  }
+})
+
+
 Route.get('/atividades', async (ctx) => {
   return new AtividadesController().index(ctx)
 })

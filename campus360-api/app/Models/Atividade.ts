@@ -23,6 +23,9 @@ export default class Atividade extends BaseModel {
   @column()
   public livre: boolean
 
+  @column()
+  public imagePath: string
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

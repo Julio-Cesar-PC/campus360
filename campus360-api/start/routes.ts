@@ -34,7 +34,7 @@ Route.post('/login', async ({request, auth}) => {
   }
 })
 
-Route.post('/logout', async ({ auth, response }) => {
+Route.post('/logout', async ({ auth }) => {
   await auth.use('api').revoke()
   return {
     revoked: true

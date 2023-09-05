@@ -20,30 +20,27 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import AtividadesController from 'App/Controllers/Http/AtividadesController'
+import AuthController from 'App/Controllers/Http/AuthController'
+
 Route.get('/', async () => {
   return "campus360"
 })
 
-Route.post('/login', async ({request, auth}) => {
-  const {email, password} = request.all()
-  try {
-    const token = await auth.use('api').attempt(email, password)
-    return token
-  } catch (error) {
-    return error
-  }
-})
+Route.post('/login', 'AuthController.login')
 
-Route.post('/logout', async ({ auth }) => {
-  await auth.use('api').revoke()
-  return {
-    revoked: true
-  }
-})
+Route.post('/logout', 'AuthController.logout').middleware('auth')
+
+Route.get('/me', async ({ auth }) => {
+  return auth.use('api').authenticate()
+}).middleware('auth')
 
 
 Route.get('/atividades', async (ctx) => {
   return new AtividadesController().index(ctx)
+})
+
+Route.get('/atividades/show/:id', async (ctx) => {
+  return new AtividadesController().show(ctx)
 })
 
 Route.post('/atividades/store', async (ctx) => {

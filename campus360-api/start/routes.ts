@@ -20,7 +20,6 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 import AtividadesController from 'App/Controllers/Http/AtividadesController'
-import AuthController from 'App/Controllers/Http/AuthController'
 
 Route.get('/', async () => {
   return "campus360"

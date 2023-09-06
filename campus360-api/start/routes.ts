@@ -27,12 +27,17 @@ Route.get('/', async () => {
 
 Route.post('/login', 'AuthController.login')
 
+Route.post('/register', 'AuthController.register')
+
+Route.get('/users', 'UsersController.index')
+
+Route.get('/me', 'UsersController.me').middleware('auth')
+
 Route.post('/logout', 'AuthController.logout').middleware('auth')
 
-Route.get('/me', async ({ auth }) => {
-  return auth.use('api').authenticate()
-}).middleware('auth')
+Route.delete('/users/destroy/:id', 'UsersController.destroy').middleware('auth')
 
+Route.put('/users/update/:id', 'UsersController.update').middleware('auth')
 
 Route.get('/atividades', async (ctx) => {
   return new AtividadesController().index(ctx)

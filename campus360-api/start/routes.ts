@@ -35,9 +35,9 @@ Route.get('/me', 'UsersController.me').middleware('auth')
 
 Route.post('/logout', 'AuthController.logout').middleware('auth')
 
-Route.delete('/users/destroy/:id', 'UsersController.destroy').middleware('auth')
+Route.delete('/users/destroy/:id', 'AuthController.destroy').middleware('auth')
 
-Route.put('/users/update/:id', 'UsersController.update').middleware('auth')
+Route.put('/users/update/:id', 'AuthController.update').middleware('auth')
 
 Route.get('/atividades', async (ctx) => {
   return new AtividadesController().index(ctx)

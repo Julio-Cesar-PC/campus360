@@ -50,8 +50,9 @@ export default class AuthController {
     }
   }
 
-  public async destroy({request}: HttpContextContract) {
-    const {id} = request.all()
+  public async destroy({params}: HttpContextContract) {
+    const id = params.id
+    console.log(id)
     try {
       const user = await User.findOrFail(id)
       await user.delete()
@@ -63,8 +64,9 @@ export default class AuthController {
     }
   }
 
-  public async update({request}: HttpContextContract) {
-    const {id, email, password} = request.all()
+  public async update({request, params}: HttpContextContract) {
+    const {email, password} = request.all()
+    const id = params.id
     try {
       const user = await User.findOrFail(id)
       user.merge({

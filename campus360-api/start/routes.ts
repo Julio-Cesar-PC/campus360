@@ -56,3 +56,6 @@ Route.delete('/atividades/destroy/:id', async (ctx) => {
 // Route.delete('/atividades/destroy/:id','AtividadesController.destroy')
 
 Route.put('/atividades/update/:id','AtividadesController.update')
+
+Route.get('/atividades/filtrar', 'AtividadesController.filtrar')
+

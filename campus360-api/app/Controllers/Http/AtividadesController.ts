@@ -47,4 +47,24 @@ export default class AtividadesController {
 
         return response.status(200).json({message: 'Atividade deletada com sucesso'})
   }
+
+  async filtrar({ request, response }) {
+    try {
+      const { tipo, data } = request.all()
+      console.log('Parâmetros recebidos:', tipo, data)
+
+      const atividadesFiltradas = await Atividade.query()
+        .where('tipo', tipo)
+        .where('data', data)
+        .fetch()
+
+      console.log('Atividades filtradas:', atividadesFiltradas.toJSON())
+
+      return response.json(atividadesFiltradas)
+    } catch (error) {
+      return response.status(500).json({ message: 'DEU RUIM.' })
+    }
+  }
 }
+
+module.exports = AtividadesController

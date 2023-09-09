@@ -19,7 +19,6 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-import AtividadesController from 'App/Controllers/Http/AtividadesController'
 
 Route.get('/', async () => {
   return "campus360"
@@ -39,23 +38,18 @@ Route.delete('/users/destroy/:id', 'AuthController.destroy').middleware('auth')
 
 Route.put('/users/update/:id', 'AuthController.update').middleware('auth')
 
-Route.get('/atividades', async (ctx) => {
-  return new AtividadesController().index(ctx)
-})
+Route.group(() => {
 
-Route.get('/atividades/show/:id', async (ctx) => {
-  return new AtividadesController().show(ctx)
-})
+  Route.get('/', 'AtividadesController.index')
 
-Route.post('/atividades/store', async (ctx) => {
-  return new AtividadesController().store(ctx)
-})
-Route.delete('/atividades/destroy/:id', async (ctx) => {
-  return new AtividadesController().destroy(ctx)
-})
-// Route.delete('/atividades/destroy/:id','AtividadesController.destroy')
+  Route.get('/show/:id', 'AtividadesController.show')
 
-Route.put('/atividades/update/:id','AtividadesController.update')
+  Route.post('/store', 'AtividadesController.store')
 
-Route.get('/atividades/filtrar', 'AtividadesController.filtrar')
+  Route.delete('/destroy/:id', 'AtividadesController.destroy')
 
+  Route.put('/update/:id','AtividadesController.update')
+
+  Route.get('/filtrar', 'AtividadesController.filtrar')
+
+}).prefix('atividades')

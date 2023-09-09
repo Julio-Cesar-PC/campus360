@@ -5,7 +5,6 @@ import Atividade from 'App/Models/Atividade'
 export default class AtividadesController {
   public async index({}: HttpContextContract) {
     const list = await Atividade.all()
-
     return list
   }
 
@@ -17,52 +16,49 @@ export default class AtividadesController {
     const data = request.only(["nome","descricao","data", "local", "tipo","livre" ])
     const ativi = await Atividade.create(data)
     return ativi
-
-
   }
 
   public async show({params}: HttpContextContract) {
     const atividadeId = Number(params.id)
     const atividade = await Atividade.findOrFail(atividadeId)
-      return atividade
+    return atividade
   }
   public async edit({}: HttpContextContract) {}
 
   public async update({request,params}: HttpContextContract) {
-    const data = request.only(["nome","descricao","data", "local", "tipo","livre" ])
+    const data = request.only(["nome","descricao","data", "local", "tipo","livre"])
     const atividadeId = Number(params.id)
     const atividade = await Atividade.findOrFail(atividadeId)
-    console.log(atividade,'Atividade nao encontrada')
-
     atividade.merge(data)
     await atividade.save()
     return atividade
   }
 
   public async destroy({params,response}: HttpContextContract) {
-      const atividadeId = Number(params.id)
-      const atividade = await Atividade.findOrFail(atividadeId)
+    const atividadeId = Number(params.id)
+    const atividade = await Atividade.findOrFail(atividadeId)
 
-       await atividade.delete()
+    await atividade.delete()
 
-        return response.status(200).json({message: 'Atividade deletada com sucesso'})
+    return response.status(200).json({message: 'Atividade deletada com sucesso'})
   }
 
-  async filtrar({ request, response }) {
+  public async filtrar({ request, response }: HttpContextContract) {
+    const {tipo, data} = request.all()
     try {
-      const { tipo, data } = request.all()
-      console.log('Parâmetros recebidos:', tipo, data)
-
       const atividadesFiltradas = await Atividade.query()
-        .where('tipo', tipo)
-        .where('data', data)
-        .fetch()
+        .where('tipo', 'LIKE', `%${tipo}%`)
+        .andWhere('data', 'LIKE', `%${data}%`)
+        .paginate(1, 20)
 
-      console.log('Atividades filtradas:', atividadesFiltradas.toJSON())
+      console.log('Atividades filtradas:', atividadesFiltradas)
 
-      return response.json(atividadesFiltradas)
+      return atividadesFiltradas
     } catch (error) {
-      return response.status(500).json({ message: 'DEU RUIM.' })
+      return response.status(400).json({
+        message: 'Erro ao filtrar atividades',
+        error: error.message,
+      })
     }
   }
 }

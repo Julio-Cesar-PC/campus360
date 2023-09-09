@@ -51,8 +51,6 @@ export default class AtividadesController {
         .andWhere('data', 'LIKE', `%${data}%`)
         .paginate(1, 20)
 
-      console.log('Atividades filtradas:', atividadesFiltradas)
-
       return atividadesFiltradas
     } catch (error) {
       return response.status(400).json({

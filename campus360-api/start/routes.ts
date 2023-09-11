@@ -53,3 +53,5 @@ Route.group(() => {
   Route.get('/filtrar', 'AtividadesController.filtrar')
 
 }).prefix('atividades')
+
+Route.post('/forgot-password', 'AuthController.forgotPassword')

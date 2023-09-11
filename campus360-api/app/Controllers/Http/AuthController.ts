@@ -1,17 +1,19 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import { randomBytes } from 'crypto'
 
 export default class AuthController {
 
-  public async login({request, auth}: HttpContextContract) {
-    const {email, password} = request.all()
+  public async login({ request, auth, response }: HttpContextContract) {
+    const { email, password } = request.all()
+  
     try {
       const token = await auth.use('api').attempt(email, password, {
         expiresIn: '7 days'
       })
       return token
     } catch (error) {
-      return error
+      return response.unauthorized({ message: 'Credenciais inválidas' })
     }
   }
 
@@ -79,5 +81,35 @@ export default class AuthController {
       return error
     }
   }
-
+  public async forgotPassword({ request, response }: HttpContextContract) {
+    const email = request.input('email')
+  
+    console.log('Email recebido:', email); 
+  
+    if (!email) {
+      return response.badRequest({ message: 'O campo de e-mail é obrigatório.' })
+    }
+  
+    try {
+      const user = await User.findBy('email', email)
+  
+      console.log('Usuário encontrado:', user); 
+  
+      if (user) {
+        const token = randomBytes(20).toString('hex')
+        user.merge({ resetPasswordToken: token })
+        await user.save()
+  
+        const resetLink = `https://campus360.com/reset-password?token=${token}`
+        console.log(`Link para redefinir senha: ${resetLink}`)
+  
+        return response.ok({ message: 'Um e-mail com as instruções para redefinir sua senha foi enviado.' })
+      } else {
+        return response.badRequest({ message: 'E-mail não encontrado.' })
+      }
+    } catch (error) {
+      console.error(error); // Log
+      return response.badRequest({ message: 'Ocorreu um erro ao processar sua solicitação.' })
+    }
+  }
 }

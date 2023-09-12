@@ -6,25 +6,48 @@ export default class AuthController {
 
   public async login({ request, auth, response }: HttpContextContract) {
     const { email, password } = request.all()
-  
     try {
+      if (!email) {
+        throw new Error('O campo email é obrigatório')
+      }
+      if (!password) {
+        throw new Error('O campo senha é obrigatório')
+      }
+      if (password.length < 6 || password.length > 12) {
+        throw new Error('A senha deve ter entre 6 e 12 caracteres')
+      }
+      if (!await User.findBy('email', email)) {
+        throw new Error('Email não cadastrado')
+      }
       const token = await auth.use('api').attempt(email, password, {
         expiresIn: '7 days'
+      }).catch(() => {
+        throw new Error('Senha incorreta')
       })
       return token
     } catch (error) {
-      return response.unauthorized({ message: 'Credenciais inválidas' })
+      return response.unauthorized({
+        message: 'Erro ao realizar login',
+        error: error.message
+       })
     }
   }
 
   public async logout({auth}: HttpContextContract) {
-    await auth.use('api').revoke()
-    return {
-      revoked: true
+    try {
+      if (!auth.user) {
+        throw new Error('Usuário não autenticado')
+      }
+      await auth.use('api').revoke()
+      return {
+        revoked: true
+    }
+    } catch (error) {
+      return error
     }
   }
 
-  public async register({request, auth}: HttpContextContract) {
+  public async register({request, auth, response}: HttpContextContract) {
     const data = request.only(['email', 'password'])
     if (!data.email) {
       throw new Error('O campo email é obrigatório')
@@ -35,42 +58,54 @@ export default class AuthController {
     if(data.password.length < 6 || data.password.length > 12) {
       throw new Error('A senha deve ter entre 6 e 12 caracteres')
     }
-
     try {
+      if (await User.findBy('email', data.email)) {
+        throw new Error('Este email já está cadastrado')
+      }
+
       if (await User.firstOrCreate(data)) {
         const token = await auth.use('api').attempt(data.email, data.password, {
           expiresIn: '7 days'
         })
         return token
-      } else {
-        return {
-          message: 'Erro ao cadastrar usuário'
-        }
       }
     } catch (error) {
-      return error
+      return response.status(400)
+      .send({
+           message: 'Erro ao cadastrar usuário',
+           error: error.message
+      })
+
     }
   }
 
-  public async destroy({params}: HttpContextContract) {
+  public async destroy({params, response}: HttpContextContract) {
     const id = params.id
-    console.log(id)
     try {
-      const user = await User.findOrFail(id)
+      const user = await User.find(id)
+      if (!user) {
+        throw new Error('Usuário não encontrado')
+      }
       await user.delete()
       return {
         message: 'Usuário excluído com sucesso'
       }
     } catch (error) {
-      return error
+      return response.status(400).send({
+        message: 'Erro ao excluir usuário',
+        error: error.message
+      })
     }
   }
 
-  public async update({request, params}: HttpContextContract) {
+  public async update({request, params, response}: HttpContextContract) {
     const {email, password} = request.all()
     const id = params.id
     try {
-      const user = await User.findOrFail(id)
+      const user = await User.find(id)
+      if (!user) {
+        throw new Error('Usuário não encontrado')
+      }
       user.merge({
         email,
         password
@@ -78,31 +113,34 @@ export default class AuthController {
       await user.save()
       return user
     } catch (error) {
-      return error
+      return response.status(400).send({
+        message: 'Erro ao atualizar usuário',
+        error: error.message
+      })
     }
   }
   public async forgotPassword({ request, response }: HttpContextContract) {
     const email = request.input('email')
-  
-    console.log('Email recebido:', email); 
-  
+
+    console.log('Email recebido:', email);
+
     if (!email) {
       return response.badRequest({ message: 'O campo de e-mail é obrigatório.' })
     }
-  
+
     try {
       const user = await User.findBy('email', email)
-  
-      console.log('Usuário encontrado:', user); 
-  
+
+      console.log('Usuário encontrado:', user);
+
       if (user) {
         const token = randomBytes(20).toString('hex')
         user.merge({ resetPasswordToken: token })
         await user.save()
-  
+
         const resetLink = `https://campus360.com/reset-password?token=${token}`
         console.log(`Link para redefinir senha: ${resetLink}`)
-  
+
         return response.ok({ message: 'Um e-mail com as instruções para redefinir sua senha foi enviado.' })
       } else {
         return response.badRequest({ message: 'E-mail não encontrado.' })

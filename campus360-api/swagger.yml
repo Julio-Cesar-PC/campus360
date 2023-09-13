@@ -1,0 +1,369 @@
+openapi: "3.0.0"
+info:
+  title: "Campus360 API"
+  version: "1.0.0"
+components:
+  responses:
+    Forbidden:
+      description: "Access token is missing or invalid"
+    Accepted:
+      description: "The request was accepted"
+    Created:
+      description: "The resource has been created"
+    NotFound:
+      description: "The resource has been created"
+    NotAcceptable:
+      description: "The resource has been created"
+  securitySchemes:
+    BearerAuth:
+      type: "http"
+      scheme: "bearer"
+  schemas:
+    Any:
+      description: "Any JSON object not defined as schema"
+    Atividade:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          example: 624
+        nome:
+          type: "string"
+          example: "string"
+        descricao:
+          type: "string"
+          example: "string"
+        data:
+          $ref: "#/components/schemas/Date"
+          example: "string"
+        local:
+          type: "string"
+          example: "string"
+        tipo:
+          type: "string"
+          example: "string"
+        livre:
+          type: "boolean"
+          example: true
+        imagePath:
+          type: "string"
+          example: "string"
+        createdAt:
+          type: "string"
+          example: "2021-03-23T16:13:08.489+01:00"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          example: "2021-03-23T16:13:08.489+01:00"
+          format: "date-time"
+      description: "Model"
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          example: 268
+        email:
+          type: "string"
+          example: "johndoe@example.com"
+          format: "email"
+        rememberMeToken:
+          type: "string"
+          example: "string"
+        resetPasswordToken:
+          type: "string"
+          example: "string"
+        createdAt:
+          type: "string"
+          example: "2021-03-23T16:13:08.489+01:00"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          example: "2021-03-23T16:13:08.489+01:00"
+          format: "date-time"
+      description: "Model"
+paths:
+  /uploads/*:
+    get:
+      summary: " (route.ts)"
+      description: ""
+      parameters: []
+      tags:
+        - "UPLOADS"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json: {}
+      security: []
+  /:
+    get:
+      summary: " (route.ts)"
+      description: ""
+      parameters: []
+      tags:
+        - ""
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json: {}
+      security: []
+  /login:
+    post:
+      summary: "Login de usuário (AuthController::login)"
+      description: "Login de usuário"
+      parameters: []
+      tags:
+        - "LOGIN"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json: {}
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+            example:
+              email: "test@test.com"
+              password: "123456"
+  /register:
+    post:
+      summary: " (AuthController::register)"
+      description: ""
+      parameters: []
+      tags:
+        - "REGISTER"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json: {}
+      security: []
+      requestBody:
+        content:
+          application/json: {}
+  /users:
+    get:
+      summary: "Get a list of users (UsersController::index)"
+      description: ""
+      parameters: []
+      tags:
+        - "USERS"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json: {}
+      security: []
+  /me:
+    get:
+      summary: " (UsersController::me)"
+      description: ""
+      parameters: []
+      tags:
+        - "ME"
+      responses:
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+      security:
+        - BearerAuth:
+            - "access"
+  /logout:
+    post:
+      summary: " (AuthController::logout)"
+      description: ""
+      parameters: []
+      tags:
+        - "LOGOUT"
+      responses:
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+      security:
+        - BearerAuth:
+            - "access"
+      requestBody:
+        content:
+          application/json: {}
+  /users/destroy/{id}:
+    delete:
+      summary: "Delete users (AuthController::destroy)"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+      security:
+        - BearerAuth:
+            - "access"
+  /users/update/{id}:
+    put:
+      summary: "Update users (AuthController::update)"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "USERS"
+      responses:
+        401:
+          description: "Unauthorized"
+        403:
+          description: "Forbidden"
+      security:
+        - BearerAuth:
+            - "access"
+      requestBody:
+        content:
+          application/json: {}
+  /forgot-password:
+    post:
+      summary: " (AuthController::forgotPassword)"
+      description: ""
+      parameters: []
+      tags:
+        - "FORGOT-PASSWORD"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json: {}
+      security: []
+      requestBody:
+        content:
+          application/json: {}
+  /atividades:
+    get:
+      summary: "Get a list of atividades (AtividadesController::index)"
+      description: ""
+      parameters: []
+      tags:
+        - "ATIVIDADES"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json: {}
+      security: []
+  /atividades/show/{id}:
+    get:
+      summary: "Get a single instance of atividades (AtividadesController::show)"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "ATIVIDADES"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json: {}
+      security: []
+  /atividades/store:
+    post:
+      summary: " (AtividadesController::store)"
+      description: ""
+      parameters: []
+      tags:
+        - "ATIVIDADES"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json: {}
+      security: []
+      requestBody:
+        content:
+          application/json: {}
+  /atividades/destroy/{id}:
+    delete:
+      summary: "Delete atividades (AtividadesController::destroy)"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "ATIVIDADES"
+      responses:
+        202:
+          description: "Accepted"
+          content:
+            application/json: {}
+      security: []
+  /atividades/update/{id}:
+    put:
+      summary: "Update atividades (AtividadesController::update)"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "string"
+          required: true
+      tags:
+        - "ATIVIDADES"
+      responses:
+        204:
+          description: "No Content"
+          content:
+            application/json: {}
+      security: []
+      requestBody:
+        content:
+          application/json: {}
+  /atividades/filtrar:
+    get:
+      summary: " (AtividadesController::filtrar)"
+      description: ""
+      parameters: []
+      tags:
+        - "ATIVIDADES"
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json: {}
+      security: []
+tags:
+  - name: "UPLOADS"
+    description: "Everything related to UPLOADS"
+  - name: "LOGIN"
+    description: "Everything related to LOGIN"
+  - name: "REGISTER"
+    description: "Everything related to REGISTER"
+  - name: "USERS"
+    description: "Everything related to USERS"
+  - name: "ME"
+    description: "Everything related to ME"
+  - name: "LOGOUT"
+    description: "Everything related to LOGOUT"
+  - name: "FORGOT-PASSWORD"
+    description: "Everything related to FORGOT-PASSWORD"
+  - name: "ATIVIDADES"
+    description: "Everything related to ATIVIDADES"

@@ -4,6 +4,17 @@ import { randomBytes } from 'crypto'
 
 export default class AuthController {
 
+  /*
+  * @login
+  * @summary Login de usuário
+  * @description Login de usuário
+  * @requestBody {"email": "test@test.com", "password": "123456"}
+  * @response {
+  "type": "bearer",
+  "token": "token",
+  "expires_at": "2023-09-20T17:03:27.484-03:00"
+  }
+  */
   public async login({ request, auth, response }: HttpContextContract) {
     const { email, password } = request.all()
     try {

@@ -19,24 +19,38 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import AutoSwagger from "adonis-autoswagger";
+import swagger from "../config/swagger";
+
+Route.get("/swagger", async () => {
+  return AutoSwagger.docs(Route.toJSON(), swagger);
+});
+
+Route.get("/docs", async () => {''
+  return AutoSwagger.ui("/swagger");
+});
 
 Route.get('/', async () => {
   return "campus360"
 })
 
-Route.post('/login', 'AuthController.login')
+Route.group(() => {
+  Route.post('/login', 'AuthController.login')
 
-Route.post('/register', 'AuthController.register')
+  Route.post('/register', 'AuthController.register')
 
-Route.get('/users', 'UsersController.index')
+  Route.get('/users', 'UsersController.index')
 
-Route.get('/me', 'UsersController.me').middleware('auth')
+  Route.get('/me', 'UsersController.me').middleware('auth')
 
-Route.post('/logout', 'AuthController.logout').middleware('auth')
+  Route.post('/logout', 'AuthController.logout').middleware('auth')
 
-Route.delete('/users/destroy/:id', 'AuthController.destroy').middleware('auth')
+  Route.delete('/users/destroy/:id', 'AuthController.destroy').middleware('auth')
 
-Route.put('/users/update/:id', 'AuthController.update').middleware('auth')
+  Route.put('/users/update/:id', 'AuthController.update').middleware('auth')
+
+  Route.post('/forgot-password', 'AuthController.forgotPassword')
+})
 
 Route.group(() => {
 
@@ -54,4 +68,3 @@ Route.group(() => {
 
 }).prefix('atividades')
 
-Route.post('/forgot-password', 'AuthController.forgotPassword')

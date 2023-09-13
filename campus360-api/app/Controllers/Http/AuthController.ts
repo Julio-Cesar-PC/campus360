@@ -58,6 +58,17 @@ export default class AuthController {
     }
   }
 
+  /*
+  * @register
+  * @summary Registro de usuário
+  * @description Registro de usuário
+  * @requestBody {"email": "test@test.com", "password": "123456"}
+  * @response {
+  "type": "bearer",
+  "token": "token",
+  "expires_at": "2023-09-20T17:03:27.484-03:00"
+  }
+  */
   public async register({request, auth, response}: HttpContextContract) {
     const data = request.only(['email', 'password'])
     if (!data.email) {

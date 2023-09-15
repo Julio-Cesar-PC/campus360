@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Atividade from 'App/Models/Atividade'
+import Application from '@ioc:Adonis/Core/Application'
 
 
 export default class AtividadesController {
@@ -11,10 +12,9 @@ export default class AtividadesController {
   public async create({}: HttpContextContract) {
 
   }
-
-  public async store({request, response}: HttpContextContract) {
+  public async store({ request, response }: HttpContextContract) {
     try {
-      const data = request.only(["nome","descricao","data", "local", "tipo","livre" ])
+      const data = request.only(["nome", "descricao", "data", "local", "tipo", "livre"])
       if (!data.nome) {
         throw new Error('O campo nome é obrigatório')
       }
@@ -31,7 +31,26 @@ export default class AtividadesController {
         throw new Error('O campo livre é obrigatório')
       }
       const ativi = await Atividade.create(data)
-      return ativi
+      
+      const imagem = request.file('imagem')
+      if (imagem) {
+        const nomeDaImagem = `${new Date().getTime()}_${imagem.clientName}`
+        await imagem.move(Application.tmpPath('uploads'), {
+          name: nomeDaImagem
+        })
+  
+        if (!imagem.fileName) {
+          throw new Error('Erro ao fazer upload da imagem')
+        }
+  
+        ativi.imagemUrl = `http://localhost:3333/uploads/${nomeDaImagem}`
+        await ativi.save()
+      }
+  
+      return response.status(201).json({
+        message: 'Atividade criada com sucesso',
+        atividade: ativi
+      })
     } catch (error) {
       return response.status(400).json({
         message: 'Erro ao criar atividade',
@@ -39,7 +58,7 @@ export default class AtividadesController {
       })
     }
   }
-
+  
   public async show({params, response}: HttpContextContract) {
     try {
       const atividadeId = Number(params.id)

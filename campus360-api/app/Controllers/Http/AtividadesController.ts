@@ -4,6 +4,26 @@ import Application from '@ioc:Adonis/Core/Application'
 
 
 export default class AtividadesController {
+  public async showImage({ params, response }: HttpContextContract) {
+    try {
+      const imageName = params.imageName
+      const imagePath = Application.tmpPath(`uploads/${imageName}`)
+      
+      
+      const exists = await fs.promises.access(imagePath, fs.constants.F_OK)
+      
+      if (exists === undefined) {
+        return response.status(404).send('Imagem não encontrada')
+      }
+      
+      
+      return response.download(imagePath)
+    } catch (error) {
+      return response.status(500).send('Erro ao obter a imagem')
+    }
+  }
+  
+
   public async index({}: HttpContextContract) {
     const list = await Atividade.all()
     return list

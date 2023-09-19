@@ -5,6 +5,9 @@ export default class Atividade extends BaseModel {
   @column()
   public imagemUrl: string
 
+  @column()
+  public imagens: string[]
+
   @column({ isPrimary: true })
   public id: number
 

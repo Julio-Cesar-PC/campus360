@@ -4,27 +4,7 @@ import Application from '@ioc:Adonis/Core/Application'
 
 
 export default class AtividadesController {
-  public async showImage({ params, response }: HttpContextContract) {
-    try {
-      const imageName = params.imageName
-      const imagePath = Application.tmpPath(`uploads/${imageName}`)
-      
-      
-      const exists = await fs.promises.access(imagePath, fs.constants.F_OK)
-      
-      if (exists === undefined) {
-        return response.status(404).send('Imagem não encontrada')
-      }
-      
-      
-      return response.download(imagePath)
-    } catch (error) {
-      return response.status(500).send('Erro ao obter a imagem')
-    }
-  }
-  
-
-  public async index({}: HttpContextContract) {
+ public async index({}: HttpContextContract) {
     const list = await Atividade.all()
     return list
   }
@@ -35,43 +15,43 @@ export default class AtividadesController {
   public async store({ request, response }: HttpContextContract) {
     try {
       const data = request.only(["nome", "descricao", "data", "local", "tipo", "livre"])
-      if (!data.nome) {
-        throw new Error('O campo nome é obrigatório')
+      console.log('Dados recebidos:', data);
+  
+      if (!data.nome || !data.data || !data.local || !data.tipo || !data.livre) {
+        throw new Error('Todos os campos (nome, data, local, tipo, livre) são obrigatórios')
       }
-      if (!data.data) {
-        throw new Error('O campo data é obrigatório')
-      }
-      if (!data.local) {
-        throw new Error('O campo local é obrigatório')
-      }
-      if (!data.tipo) {
-        throw new Error('O campo tipo é obrigatório')
-      }
-      if (!data.livre) {
-        throw new Error('O campo livre é obrigatório')
-      }
+  
       const ativi = await Atividade.create(data)
-      
-      const imagem = request.file('imagem')
-      if (imagem) {
-        const nomeDaImagem = `${new Date().getTime()}_${imagem.clientName}`
+      console.log('Atividade criada:', ativi.toJSON());
+  
+      const imagens = request.files('imagem') // Recebe uma lista de imagens
+  
+      await Promise.all(imagens.map(async (imagem, index) => {
+        const nomeDaImagem = `${new Date().getTime()}_${index}_${imagem.clientName}`
         await imagem.move(Application.tmpPath('uploads'), {
           name: nomeDaImagem
         })
   
         if (!imagem.fileName) {
-          throw new Error('Erro ao fazer upload da imagem')
+          throw new Error(`Erro ao fazer upload da imagem ${index}`)
         }
   
-        ativi.imagemUrl = `http://localhost:3333/uploads/${nomeDaImagem}`
-        await ativi.save()
-      }
+        ativi.imagemUrls = ativi.imagemUrls || [] // Certifica-se de que existe um array para as URLs
+        ativi.imagemUrls.push(`http://localhost:3333/uploads/${nomeDaImagem}`)
+  
+        console.log(`Imagem ${index + 1} carregada e URL associada à atividade: http://localhost:3333/uploads/${nomeDaImagem}`);
+      }))
+  
+      await ativi.save()
+  
+      console.log('Atividade salva URL D imagem:', ativi.toJSON());
   
       return response.status(201).json({
         message: 'Atividade criada com sucesso',
         atividade: ativi
       })
     } catch (error) {
+      console.error('Erro ao criar atividade:', error.message);
       return response.status(400).json({
         message: 'Erro ao criar atividade',
         error: error.message
@@ -83,17 +63,22 @@ export default class AtividadesController {
     try {
       const atividadeId = Number(params.id)
       const atividade = await Atividade.findOrFail(atividadeId)
-      .catch(() => {
-        throw new Error('Atividade não encontrada')
-      })
+        .catch(() => {
+          throw new Error('Atividade não encontrada')
+        })
+  
+      console.log('Atividade encontrada:', atividade.toJSON()); // Log da atividade encontrada
+  
       return atividade
     } catch (error) {
+      console.error('Erro ao buscar atividade:', error.message); // Log de erro
       return response.status(400).json({
         message: 'Erro ao buscar atividade',
         error: error.message
       })
     }
   }
+  
   public async edit({}: HttpContextContract) {}
 
   public async update({request, params, response}: HttpContextContract) {

@@ -1,10 +1,15 @@
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
+import { column, beforeSave, BaseModel, belongsTo, BelongsTo, computed } from '@ioc:Adonis/Lucid/Orm'
+import Role from 'App/Models/Role'
+import Roles from 'App/Enums/Roles'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column({ serializeAs: null })
+  public roleId: number
 
   @column()
   public email: string
@@ -16,8 +21,25 @@ export default class User extends BaseModel {
   public rememberMeToken: string | null
 
   @column()
-  public resetPasswordToken: string | null 
+  public resetPasswordToken: string | null
 
+  @belongsTo(() => Role)
+  public role: BelongsTo<typeof Role>
+
+  @computed()
+  public get isAdmin () {
+    return this.roleId === Roles.ADMIN
+  }
+
+  @computed()
+  public get isModerator () {
+    return this.roleId === Roles.MODERATOR
+  }
+
+  @computed()
+  public get isUser () {
+    return this.roleId === Roles.USER
+  }
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

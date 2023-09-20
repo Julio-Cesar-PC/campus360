@@ -150,6 +150,28 @@ export default class AuthController {
     }
   }
 
+  /*
+  * @stillLogged
+  * @summary Verifica se o usuário está logado
+  * @description Verifica se o usuário está logado
+  */
+  public async stillLogged({auth, response}: HttpContextContract) {
+    try {
+      if (!auth.isLoggedIn) {
+        throw new Error('Usuário não autenticado')
+      }
+      return response.ok({
+        message: 'Usuário autenticado',
+        user: auth.user
+      })
+    } catch (error) {
+      return response.status(400).send({
+        message: 'Erro ao verificar usuário',
+        error: error.message
+      })
+    }
+  }
+
   public async forgotPassword({ request, response }: HttpContextContract) {
     const email = request.input('email')
 

@@ -14,7 +14,15 @@ export default class UsersController {
   }
 
   public async me({auth}: HttpContextContract) {
-    return auth.use('api').authenticate()
+    try {
+      if (!auth.user) {
+        throw new Error('Usuário não autenticado')
+      }
+      const user = await User.query().where('id', auth.user?.id).preload('role').firstOrFail()
+      return user
+    } catch (error) {
+      return error
+    }
   }
 
 }

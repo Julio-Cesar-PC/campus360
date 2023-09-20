@@ -6,6 +6,7 @@ export default class extends BaseSeeder {
     await User.createMany([
       {
         email: 'admin@email.com',
+        roleId: 2,
         password: '123456'
       },
 

@@ -68,4 +68,4 @@ Route.group(() => {
 
 }).prefix('atividades')
 
-Route.get('uploads/:imageName', 'AtividadeController.showImage')
+Route.get('uploads/:imageName', 'AtividadesController.showImage')

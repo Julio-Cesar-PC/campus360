@@ -101,6 +101,9 @@ export default class AuthController {
     }
   }
 
+  /*
+  * @destroy
+  */
   public async destroy({params, response}: HttpContextContract) {
     const id = params.id
     try {
@@ -119,7 +122,12 @@ export default class AuthController {
       })
     }
   }
-
+  /*
+  * @update
+  * @summary Registro de usuário
+  * @description Registro de usuário
+  * @requestBody {"email": "test@test.com", "password": "123456"}
+  */
   public async update({request, params, response}: HttpContextContract) {
     const {email, password} = request.all()
     const id = params.id
@@ -141,6 +149,7 @@ export default class AuthController {
       })
     }
   }
+
   public async forgotPassword({ request, response }: HttpContextContract) {
     const email = request.input('email')
 

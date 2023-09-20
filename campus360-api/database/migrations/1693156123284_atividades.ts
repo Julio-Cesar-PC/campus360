@@ -4,11 +4,6 @@ export default class extends BaseSchema {
   protected tableName = 'atividades'
 
   public async up () {
-    this.schema.alterTable(this.tableName, (table) => {
-      table.text('imagem_url')  // Adiciona a nova coluna imagem_url
-    })
-
-    
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.text('nome').notNullable()
@@ -17,9 +12,10 @@ export default class extends BaseSchema {
       table.text('local').notNullable()
       table.text('tipo').notNullable()
       table.boolean('livre').notNullable()
+      table.text('imagem_url')
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
-      
+
     })
   }
 

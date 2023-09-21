@@ -17,10 +17,6 @@ export default class extends BaseSchema {
         { id: Roles.MODERATOR, nome: 'MODERATOR' }
       ])
     })
-
-    this.schema.alterTable('users', (table) => {
-      table.integer('role_id').unsigned().references('id').inTable('roles').defaultTo(1)
-    })
   }
 
   public async down () {

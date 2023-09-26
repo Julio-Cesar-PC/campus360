@@ -58,13 +58,15 @@ Route.group(() => {
 
   Route.get('/show/:id', 'AtividadesController.show')
 
-  Route.post('/store', 'AtividadesController.store')
-
-  Route.delete('/destroy/:id', 'AtividadesController.destroy')
-
-  Route.put('/update/:id','AtividadesController.update')
-
   Route.get('/filtrar', 'AtividadesController.filtrar')
+
+  Route.group(() => {
+    Route.post('/store', 'AtividadesController.store')
+
+    Route.delete('/destroy/:id', 'AtividadesController.destroy')
+
+    Route.put('/update/:id','AtividadesController.update')
+  }).middleware(['auth', 'admin'])
 
 }).prefix('atividades')
 

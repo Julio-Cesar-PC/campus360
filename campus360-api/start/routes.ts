@@ -53,6 +53,9 @@ Route.group(() => {
 
   Route.post('/reset-password', 'AuthController.resetPassword')
 
+  Route.post('/atividades/:id/participar', 'AtividadesController.participar').middleware('auth')
+
+
 })
 
 Route.group(() => {

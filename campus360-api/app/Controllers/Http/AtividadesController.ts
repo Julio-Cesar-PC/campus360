@@ -4,6 +4,63 @@ import Application from '@ioc:Adonis/Core/Application'
 
 
 export default class AtividadesController {
+  public async participar({ params, auth, response }: HttpContextContract) {
+    try {
+      const isAutenticado = await auth.check();
+      console.log('Usuário autenticado:', isAutenticado);
+      const atividadeId = Number(params.id)
+  
+      // Log para verificar ID
+      console.log('ID da Atividade:', atividadeId)
+  
+      
+      const atividade = await Atividade.find(atividadeId)
+  
+      if (!atividade) {
+        
+        console.log('Atividade não encontrada')
+  
+        return response.status(404).json({ message: 'Atividade não encontrada' })
+      }
+  
+      // Verifica se o usuário está autenticado
+      if (!auth.user || !auth.user.id) {
+        // Log 
+        console.log('Usuário não autenticado')
+  
+        throw new Error('Usuário não autenticado')
+      }
+  
+      // verif se o usuário já está participando da atividade
+      const usuarioJaParticipa = atividade.participantes && atividade.participantes.includes(auth.user.id)
+      if (usuarioJaParticipa) {
+        // Log 
+        console.log('Usuário já está participando desta atividade')
+  
+        return response.status(400).json({ message: 'Usuário já está participando desta atividade' })
+      }
+  
+      // Add user à lista de participantes
+      atividade.participantes = atividade.participantes || []
+      atividade.participantes.push(auth.user.id)
+  
+      await atividade.save()
+  
+      // Log para verificar se a participação foi bem-sucedida
+      console.log('Usuário agora está participando desta atividade')
+  
+      return response.status(200).json({ message: 'Você agora está participando desta atividade' })
+    } catch (error) {
+      // Log erro
+      console.error('Erro ao participar da atividade:', error.message)
+  
+      return response.status(400).json({
+        message: 'Erro ao participar da atividade',
+        error: error.message
+      })
+    }
+  }
+  
  public async index({}: HttpContextContract) {
     const list = await Atividade.all()
     return list
@@ -29,6 +86,7 @@ export default class AtividadesController {
       }
 
       const ativi = await Atividade.create(data)
+      
       console.log('Atividade criada:', ativi.toJSON());
 
       const imagens = request.files('imagem') // Recebe uma lista de imagens

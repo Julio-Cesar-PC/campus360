@@ -53,7 +53,6 @@ Route.group(() => {
 
   Route.post('/reset-password', 'AuthController.resetPassword')
 
-  Route.post('/atividades/:id/participar', 'AtividadesController.participar').middleware('auth')
 
 
 })
@@ -66,13 +65,15 @@ Route.group(() => {
 
   Route.get('/filtrar', 'AtividadesController.filtrar')
 
+  Route.post(':id/participar', 'ParticipacaoController.participar').middleware('auth')
+
   Route.group(() => {
     Route.post('/store', 'AtividadesController.store')
 
     Route.delete('/destroy/:id', 'AtividadesController.destroy')
 
     Route.put('/update/:id','AtividadesController.update')
-  }).middleware(['auth', 'admin'])
+  }).middleware(['auth', 'moderator'])
 
 }).prefix('atividades')
 

@@ -39,5 +39,5 @@ export default class Atividade extends BaseModel {
   public updatedAt: DateTime
 
   @column()
-  public participantes: number[] // Lista de IDs dos usuários que participam da atividade
+  public participantes: number
 }

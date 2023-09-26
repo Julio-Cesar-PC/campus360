@@ -37,4 +37,7 @@ export default class Atividade extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @column()
+  public participantes: number[] // Lista de IDs dos usuários que participam da atividade
 }

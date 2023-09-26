@@ -50,6 +50,9 @@ Route.group(() => {
   Route.put('/users/update/:id', 'AuthController.update').middleware('auth')
 
   Route.post('/forgot-password', 'AuthController.forgotPassword')
+
+  Route.post('/reset-password', 'AuthController.resetPassword')
+
 })
 
 Route.group(() => {

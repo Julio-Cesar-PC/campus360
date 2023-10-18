@@ -7,6 +7,8 @@ export default class extends BaseSeeder {
     const atividades = fs.readFileSync('eventos.json', 'utf-8')
     const atividadesJson = JSON.parse(atividades)
 
+    atividadesJson.sort((a, b) => new Date(b.date) - new Date(a.date)); //??? é isso ??
+
     for (let i = 0; i < atividadesJson.length; i++) {
       const atividade = atividadesJson[i]
       const atividadeObj = {

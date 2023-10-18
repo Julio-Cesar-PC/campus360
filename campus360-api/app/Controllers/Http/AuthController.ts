@@ -69,35 +69,43 @@ export default class AuthController {
   "expires_at": "2023-09-20T17:03:27.484-03:00"
   }
   */
-  public async register({request, auth, response}: HttpContextContract) {
+  public async register({ request, auth, response }: HttpContextContract) {
     const data = request.only(['email', 'password'])
+
     if (!data.email) {
       throw new Error('O campo email é obrigatório')
     }
+
+    //formato do e-mail usando regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(data.email)) {
+      throw new Error('O email inserido não é válido')
+    }
+
     if (!data.password) {
       throw new Error('O campo senha é obrigatório')
     }
-    if(data.password.length < 6 || data.password.length > 12) {
+    if (data.password.length < 6 || data.password.length > 12) {
       throw new Error('A senha deve ter entre 6 e 12 caracteres')
     }
+
     try {
       if (await User.findBy('email', data.email)) {
         throw new Error('Este email já está cadastrado')
       }
 
-      if (await User.firstOrCreate(data)) {
-        const token = await auth.use('api').attempt(data.email, data.password, {
-          expiresIn: '7 days'
-        })
-        return token
-      }
-    } catch (error) {
-      return response.status(400)
-      .send({
-           message: 'Erro ao cadastrar usuário',
-           error: error.message
+      const user = await User.firstOrCreate(data)
+
+      const token = await auth.use('api').attempt(user.email, data.password, {
+        expiresIn: '7 days'
       })
 
+      return token
+    } catch (error) {
+      return response.status(400).send({
+        message: 'Erro ao cadastrar usuário',
+        error: error.message
+      })
     }
   }
 

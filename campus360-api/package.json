@@ -27,6 +27,7 @@
     "@adonisjs/repl": "^3.1.11",
     "adonis-autoswagger": "^1.8.1",
     "axios": "^1.5.1",
+    "cloudinary": "^1.41.0",
     "luxon": "^3.4.2",
     "pg": "^8.11.3",
     "proxy-addr": "^2.0.7",

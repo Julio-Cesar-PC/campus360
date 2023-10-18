@@ -1,6 +1,12 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Atividade from 'App/Models/Atividade'
-import Application from '@ioc:Adonis/Core/Application'
+import {v2 as cloudinary} from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: 'drp8hmbhs',
+  api_key: '856231962654632',
+  api_secret: 'zVCDhuiUfNEDP1e0EVFCupFEchQ'
+});
 
 
 export default class AtividadesController {
@@ -32,23 +38,25 @@ export default class AtividadesController {
 
       console.log('Atividade criada:', ativi.toJSON());
 
-      const imagens = request.files('imagem') // Recebe uma lista de imagens
-
-      await Promise.all(imagens.map(async (imagem, index) => {
-        const nomeDaImagem = `${new Date().getTime()}_${index}_${imagem.clientName}`
-        await imagem.move(Application.tmpPath('uploads'), {
-          name: nomeDaImagem
-        })
-
-        if (!imagem.fileName) {
-          throw new Error(`Erro ao fazer upload da imagem ${index}`)
+      const imagem = request.files('imagem') // Recebe uma imagem
+      // Converte a imagem para base64
+      if (imagem && imagem.length > 0) {
+        if (imagem && imagem.length > 0 && imagem[0].tmpPath) {
+          await cloudinary.uploader.upload(imagem[0].tmpPath, {
+            folder: 'atividades',
+            public_id: `atividade-${ativi.id}`
+            }, (error, result) => {
+              if (error) {
+                console.error('Erro ao salvar imagem:', error.message);
+              } else {
+                console.log('Imagem salva:', result);
+                ativi.imagemUrl = result?.secure_url ?? ''; // add null check here
+              }
+            }
+          )
         }
+      }
 
-        ativi.imagens = ativi.imagens || [] // Certifica-se de que existe um array para as URLs
-        ativi.imagens.push(`http://localhost:3333/uploads/${nomeDaImagem}`)
-
-        console.log(`Imagem ${index + 1} carregada e URL associada à atividade: http://localhost:3333/uploads/${nomeDaImagem}`);
-      }))
 
       await ativi.save()
 

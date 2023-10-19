@@ -11,7 +11,7 @@ cloudinary.config({
 
 export default class AtividadesController {
  public async index({}: HttpContextContract) {
-    const list = await Atividade.all()
+    const list = (await Atividade.query().orderBy('data', 'desc'))
     return list
   }
 

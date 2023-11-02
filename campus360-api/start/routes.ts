@@ -67,6 +67,10 @@ Route.group(() => {
 
   Route.post(':id/participar', 'ParticipacaoController.participar').middleware('auth')
 
+  Route.post(':id/desistir', 'ParticipacaoController.desistir').middleware('auth')
+
+  Route.get('/participacoes/:id', 'ParticipacaoController.index')
+
   Route.group(() => {
     Route.post('/store', 'AtividadesController.store')
 

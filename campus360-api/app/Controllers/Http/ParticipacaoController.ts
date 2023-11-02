@@ -27,7 +27,7 @@ export default class ParticipacaosController {
 
       Participacao.create({
         atividadeId: atividadeId,
-        participanteId: participanteId
+        userId: participanteId
       })
 
       // incrementa o número de participantes da atividade
@@ -77,6 +77,27 @@ export default class ParticipacaosController {
 
       return response.status(400).json({
         message: 'Erro ao desistir da atividade',
+        error: error.message
+      })
+    }
+  }
+
+  public async index({ params, response }: HttpContextContract) {
+    try {
+      const atividadeId = Number(params.id)
+      const atividade = await Atividade.find(atividadeId)
+      if (!atividade) {
+        throw new Error('Atividade não encontrada')
+      }
+
+      const participantes = await Participacao.query()
+        .where('atividade_id', atividadeId)
+        .preload('participante')
+
+      return response.status(200).json(participantes)
+    } catch (error) {
+      return response.status(400).json({
+        message: 'Erro ao listar participantes da atividade',
         error: error.message
       })
     }

@@ -17,10 +17,10 @@ export default class User extends BaseModel {
   @column({ serializeAs: null })
   public password: string
 
-  @column()
+  @column({ serializeAs: null})
   public rememberMeToken: string | null
 
-  @column()
+  @column({ serializeAs: null})
   public resetPasswordToken: string | null
 
   @belongsTo(() => Role)
@@ -41,10 +41,10 @@ export default class User extends BaseModel {
     return this.roleId === Roles.USER
   }
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ autoCreate: true, serializeAs: null })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
   public updatedAt: DateTime
 
   @beforeSave()

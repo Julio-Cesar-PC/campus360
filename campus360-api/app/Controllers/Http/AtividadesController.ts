@@ -25,14 +25,18 @@ export default class AtividadesController {
   * @description Cria uma nova atividade
   * @requestBody {"nome": "Atividade 1", "descricao": "Atividade 1", "data": "2021-09-20T17:03:27.484-03:00", "local": "Local 1", "tipo": "Tipo 1", "livre": true}
   */
-  public async store({ request, response }: HttpContextContract) {
+  public async store({ request, response, auth }: HttpContextContract) {
     try {
-      const data = request.only(["nome", "descricao", "data", "local", "tipo", "livre"])
+      const data = request.only(["nome", "descricao", "data", "local", "tipo", "livre", "createdBy"])
       console.log('Dados recebidos:', data);
 
       if (!data.nome || !data.data || !data.local || !data.tipo || !data.livre) {
         throw new Error('Todos os campos (nome, data, local, tipo, livre) são obrigatórios')
       }
+
+      const user = await auth.user
+
+      data.createdBy = user?.id
 
       const ativi = await Atividade.create(data)
 
@@ -103,7 +107,7 @@ export default class AtividadesController {
   * @description Atualiza uma atividade
   * @requestBody {"nome": "Atividade 1", "descricao": "Atividade 1", "data": "2021-09-20T17:03:27.484-03:00", "local": "Local 1", "tipo": "Tipo 1", "livre": true}
   */
-  public async update({request, params, response}: HttpContextContract) {
+  public async update({request, params, response, auth}: HttpContextContract) {
     try {
       const data = request.only(["nome","descricao","data", "local", "tipo","livre"])
       const atividadeId = Number(params.id)
@@ -111,6 +115,9 @@ export default class AtividadesController {
       .catch(() => {
         throw new Error('Atividade não encontrada')
       })
+      if (atividade.createdBy !== auth.user?.id) {
+        throw new Error('Você não tem permissão para atualizar esta atividade')
+      }
       atividade.merge(data)
       await atividade.save()
       return atividade
@@ -122,13 +129,16 @@ export default class AtividadesController {
     }
   }
 
-  public async destroy({params, response}: HttpContextContract) {
+  public async destroy({params, response, auth}: HttpContextContract) {
     try {
       const atividadeId = Number(params.id)
       const atividade = await Atividade.findOrFail(atividadeId)
       .catch(() => {
         throw new Error('Atividade não encontrada')
       })
+      if (atividade.createdBy !== auth.user?.id) {
+        throw new Error('Você não tem permissão para deletar esta atividade')
+      }
       await atividade.delete()
       return response.status(200).json({message: 'Atividade deletada com sucesso'})
     } catch (error) {
@@ -148,17 +158,40 @@ export default class AtividadesController {
   * @paramQuery page
   */
   public async filtrar({ request, response }: HttpContextContract) {
-    let {tipo, data, page} = request.qs()
+    let {tipo, data, page, perPage} = request.qs()
+    if (!perPage) perPage = 10
+    if (!page) page = 1
     try {
       const query = Atividade.query()
       if (tipo) query.where('tipo', 'LIKE', `%${tipo}%`)
       if (data) query.where('data', 'LIKE', `%${data}%`)
-      if (page) return query.paginate(page, 10)
+      if (page) return query.paginate(page, perPage)
       return query.exec()
     } catch (error) {
       return response.status(400).json({
         message: 'Erro ao filtrar atividades',
         error: error.message,
+      })
+    }
+  }
+
+  public async getAtividadesByAuth({ request, auth, response}: HttpContextContract) {
+    try {
+      let { perPage, page } = request.qs()
+      if (!perPage) perPage = 10
+      if (!page) page = 1
+      const user = await auth.user
+      if (!user) {
+        throw new Error('Usuário não autenticado')
+      }
+      const atividades = await Atividade.query()
+      .where('created_by', user.id)
+      .paginate(page, perPage)
+      return atividades
+    } catch (error) {
+      return response.status(400).json({
+        message: 'Erro ao buscar atividades',
+        error: error.message
       })
     }
   }

@@ -71,12 +71,15 @@ Route.group(() => {
 
   Route.get('/participacoes/:id', 'ParticipacaoController.index')
 
+
   Route.group(() => {
     Route.post('/store', 'AtividadesController.store')
 
     Route.delete('/destroy/:id', 'AtividadesController.destroy')
 
     Route.put('/update/:id','AtividadesController.update')
+
+    Route.get('/index', 'AtividadesController.getAtividadesByAuth')
   }).middleware(['auth', 'moderator'])
 
 }).prefix('atividades')

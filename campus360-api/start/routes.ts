@@ -21,6 +21,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 import AutoSwagger from "adonis-autoswagger";
 import swagger from "../config/swagger";
+import Atividade from 'App/Models/Atividade';
+import AtividadesController from 'App/Controllers/Http/AtividadesController';
 
 Route.get("/swagger", async () => {
   return AutoSwagger.docs(Route.toJSON(), swagger);
@@ -81,7 +83,19 @@ Route.group(() => {
 
     Route.get('/index', 'AtividadesController.getAtividadesByAuth')
   }).middleware(['auth', 'moderator'])
-
 }).prefix('atividades')
+
+Route.group(() => {
+  Route.get('/', 'UsersController.index')
+
+  Route.delete('/destroy/:id', 'UsersController.destroy')
+
+  Route.put('/update/:id', 'UsersController.update')
+
+  Route.put('/promote/:id', 'UsersController.promoteToModerator')
+
+  Route.put('/demote/:id', 'UsersController.demoteToUser')
+
+}).middleware(['auth', 'admin']).prefix('admin')
 
 Route.get('uploads/:imageName', 'AtividadesController.showImage')

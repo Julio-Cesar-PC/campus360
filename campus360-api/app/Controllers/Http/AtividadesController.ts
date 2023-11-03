@@ -136,7 +136,8 @@ export default class AtividadesController {
       .catch(() => {
         throw new Error('Atividade não encontrada')
       })
-      if (atividade.createdBy !== auth.user?.id) {
+      console.log(auth.user?.isAdmin)
+      if (atividade.createdBy !== auth.user?.id && !auth.user?.isAdmin) {
         throw new Error('Você não tem permissão para deletar esta atividade')
       }
       await atividade.delete()

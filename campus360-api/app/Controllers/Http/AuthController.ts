@@ -182,21 +182,21 @@ export default class AuthController {
   public async resetPassword({ request, response }: HttpContextContract) {
     const token = request.input('token')
     const newPassword = request.input('newPassword')
-  
+
     try {
       const user = await User.findBy('reset_password_token', token)
-  
+
       if (!user) {
         throw new Error('Token inválido ou expirado')
       }
-  
+
       user.merge({
         password: newPassword,
         resetPasswordToken: null, // Limpa o token após a redefinição
       })
-  
+
       await user.save()
-  
+
       return response.ok({
         message: 'Senha redefinida com sucesso'
       })

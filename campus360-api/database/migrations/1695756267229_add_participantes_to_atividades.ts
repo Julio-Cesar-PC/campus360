@@ -7,14 +7,6 @@ export default class AddParticipantesToAtividades extends BaseSchema {
       table.integer('atividade_id').unsigned().references('id').inTable('atividades')
       table.integer('participante_id').unsigned().references('id').inTable('users')
     })
-
-    this.schema.table("atividades", (table) => {
-      table.integer('participantes').defaultTo(0)
-    })
-
-    this.schema.table("users", (table) => {
-      table.integer('participacoes').defaultTo(0)
-    })
   }
 
   public async down () {

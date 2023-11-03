@@ -14,9 +14,9 @@ export default class extends BaseSchema {
       table.text('tipo').notNullable()
       table.boolean('livre').notNullable()
       table.text('imagem_url')
+      table.integer('participantes').defaultTo(0)
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
-
     })
   }
 

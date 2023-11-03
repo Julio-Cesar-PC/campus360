@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.string('password', 180).notNullable()
       table.string('remember_me_token').nullable()
       table.string('reset_password_token').nullable()
-
+      table.integer('participacoes').defaultTo(0)
       /**
        * Uses timestampz for PostgreSQL and DATETIME2 for MSSQL
        */

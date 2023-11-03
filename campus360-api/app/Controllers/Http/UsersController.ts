@@ -4,6 +4,13 @@ import Roles from 'App/Enums/Roles'
 
 export default class UsersController {
 
+  /*
+  * @index
+  * @summary Lista os usuários
+  * @description Lista os usuários
+  * @paramQuery perPage
+  * @paramQuery page
+  */
   public async index({request}: HttpContextContract) {
     let {page, perPage} = request.qs()
     if(!page) page = 1
@@ -28,6 +35,11 @@ export default class UsersController {
     }
   }
 
+  /*
+  * @destroy
+  * @summary Exclui um usuário
+  * @description Exclui um usuário
+  */
   public async destroy({params, response}: HttpContextContract) {
     const id = params.id
     try {
@@ -47,6 +59,12 @@ export default class UsersController {
     }
   }
 
+  /*
+  * @update
+  * @summary Atualiza um usuário
+  * @description Atualiza um usuário
+  * @requestBody {"email": "email@email.com", "password": "123456"}
+  */
   public async update({request, params, response}: HttpContextContract) {
     const {email, password} = request.all()
     const id = params.id
@@ -69,6 +87,11 @@ export default class UsersController {
     }
   }
 
+  /*
+  * @promote
+  * @summary Promove um usuário para moderador
+  * @description Promove um usuário para moderador
+  */
   public async promoteToModerator({params, response}: HttpContextContract) {
     const id = params.id
     try {
@@ -89,6 +112,11 @@ export default class UsersController {
     }
   }
 
+  /*
+  * @demote
+  * @summary Rebaixa um usuário para Usuário comum
+  * @description Rebaixa um usuário para Usuário comum
+  */
   public async demoteToUser({params, response}: HttpContextContract) {
     const id = params.id
     try {

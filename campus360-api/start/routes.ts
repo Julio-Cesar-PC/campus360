@@ -21,8 +21,6 @@
 import Route from '@ioc:Adonis/Core/Route'
 import AutoSwagger from "adonis-autoswagger";
 import swagger from "../config/swagger";
-import Atividade from 'App/Models/Atividade';
-import AtividadesController from 'App/Controllers/Http/AtividadesController';
 
 Route.get("/swagger", async () => {
   return AutoSwagger.docs(Route.toJSON(), swagger);

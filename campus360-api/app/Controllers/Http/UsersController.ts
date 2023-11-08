@@ -99,6 +99,9 @@ export default class UsersController {
       if (!user) {
         throw new Error('Usuário não encontrado')
       }
+      if (user.roleId === Roles.ADMIN) {
+        throw new Error('Você não pode promover um administrador')
+      }
       user.merge({
         roleId: Roles.MODERATOR
       })
@@ -123,6 +126,9 @@ export default class UsersController {
       const user = await User.find(id)
       if (!user) {
         throw new Error('Usuário não encontrado')
+      }
+      if (user.roleId === Roles.ADMIN) {
+        throw new Error('Você não pode rebaixar um administrador')
       }
       user.merge({
         roleId: Roles.USER

@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Atividade from 'App/Models/Atividade'
+import Participacao from 'App/Models/Participacao';
 import {v2 as cloudinary} from 'cloudinary';
 
 cloudinary.config({
@@ -140,6 +141,7 @@ export default class AtividadesController {
       if (atividade.createdBy !== auth.user?.id && !auth.user?.isAdmin) {
         throw new Error('Você não tem permissão para deletar esta atividade')
       }
+      await Participacao.query().where('atividade_id', atividadeId).delete()
       await atividade.delete()
       return response.status(200).json({message: 'Atividade deletada com sucesso'})
     } catch (error) {

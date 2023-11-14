@@ -29,7 +29,6 @@ export default class AtividadesController {
   public async store({ request, response, auth }: HttpContextContract) {
     try {
       const data = request.only(["nome", "descricao", "data", "local", "tipo", "livre", "createdBy"])
-      console.log('Dados recebidos:', data);
 
       if (!data.nome || !data.data || !data.local || !data.tipo || !data.livre) {
         throw new Error('Todos os campos (nome, data, local, tipo, livre) são obrigatórios')
@@ -41,31 +40,26 @@ export default class AtividadesController {
 
       const ativi = await Atividade.create(data)
 
-      console.log('Atividade criada:', ativi.toJSON());
-
-      const imagem = request.files('imagem') // Recebe uma imagem
-      // Converte a imagem para base64
-      if (imagem && imagem.length > 0) {
-        if (imagem && imagem.length > 0 && imagem[0].tmpPath) {
-          await cloudinary.uploader.upload(imagem[0].tmpPath, {
-            folder: 'atividades',
-            public_id: `atividade-${ativi.id}`
-            }, (error, result) => {
-              if (error) {
-                console.error('Erro ao salvar imagem:', error.message);
-              } else {
-                console.log('Imagem salva:', result);
-                ativi.imagemUrl = result?.secure_url ?? ''; // add null check here
-              }
-            }
-          )
-        }
+      const imagem = request.only(['imagem'])
+      const imagemBase64 = `data:image/png;base64,${imagem.imagem}`
+      if (imagemBase64) {
+        await cloudinary.uploader.upload(imagemBase64, {
+          folder: 'atividades',
+          public_id: `atividade-${ativi.id}`,
+          validadtion: 'image'
+        }, async (error, result) => {
+          if (error) {
+            console.error('Erro ao fazer upload da imagem:', error.message);
+            return response.status(400).json({
+              message: 'Erro ao fazer upload da imagem',
+              error: error.message
+            })
+          }
+          console.log('Imagem enviada com sucesso:', result);
+          ativi.imagemUrl = result?.secure_url ?? '';
+          await ativi.save()
+        })
       }
-
-
-      await ativi.save()
-
-      console.log('Atividade salva URL D imagem:', ativi.toJSON());
 
       return response.status(201).json({
         message: 'Atividade criada com sucesso',

@@ -28,7 +28,7 @@ export default class ParticipacaosController {
 
         Participacao.create({
           atividadeId: atividadeId,
-          userId: participanteId
+          participanteId: participanteId
         })
 
         // incrementa o número de participantes da atividade

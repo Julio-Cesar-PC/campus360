@@ -6,8 +6,8 @@ export default class Participacao extends BaseModel {
   @column({ isPrimary: false })
   public atividadeId: number
 
-  @column({ isPrimary: false, columnName: 'participante_id' })
-  public userId: number
+  @column({ isPrimary: false })
+  public participanteId: number
 
   @belongsTo(() => Atividade)
   public atividade: BelongsTo<typeof Atividade>

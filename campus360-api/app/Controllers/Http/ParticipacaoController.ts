@@ -19,7 +19,7 @@ export default class ParticipacaosController {
 
       const usuarioJaParticipa = await Participacao.query()
         .where('atividade_id', atividadeId)
-        .andWhere('user_id', participanteId)
+        .andWhere('participante_id', participanteId)
         .first()
       if (usuarioJaParticipa) {
         throw new Error('Já está participando da atividade')

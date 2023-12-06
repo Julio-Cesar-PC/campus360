@@ -23,18 +23,19 @@ export default class ParticipacaosController {
         .first()
       if (usuarioJaParticipa) {
         throw new Error('Já está participando da atividade')
-      } else {
-        await Participacao.create({
-          atividadeId: atividadeId,
-          userId: participanteId
-        })
-
-        // incrementa o número de participantes da atividade
-        atividade.participantes = atividade.participantes + 1
-        await atividade.save()
-
-        return response.status(200).json({ message: 'Você agora está participando desta atividade' })
       }
+
+      Participacao.create({
+        atividadeId: atividadeId,
+        userId: participanteId
+      })
+
+      // incrementa o número de participantes da atividade
+      atividade.participantes = atividade.participantes + 1
+      await atividade.save()
+
+
+      return response.status(200).json({ message: 'Você agora está participando desta atividade' })
     } catch (error) {
       return response.status(400).json({
         message: 'Erro ao participar da atividade',

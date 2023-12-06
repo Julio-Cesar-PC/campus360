@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, belongsTo, BelongsTo, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
+import Participacao from './Participacao'
 import User from './User'
 
 export default class Atividade extends BaseModel {
@@ -49,4 +50,7 @@ export default class Atividade extends BaseModel {
     foreignKey: 'created_by'
   })
   public user: BelongsTo<typeof User>
+
+  @hasMany(() => Participacao)
+  public participacoes: HasMany<typeof Participacao>
 }

@@ -28,7 +28,7 @@ export default class ParticipacaosController {
 
         const part = await Participacao.create({
           atividadeId: atividadeId,
-          participanteId: participanteId
+          userId: participanteId
         })
         if (!part) {
           throw new Error('Erro ao participar da atividade')

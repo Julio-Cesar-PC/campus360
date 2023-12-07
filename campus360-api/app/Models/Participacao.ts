@@ -3,11 +3,11 @@ import Atividade from './Atividade'
 import User from './User'
 
 export default class Participacao extends BaseModel {
-  @column({ isPrimary: false })
+  @column({ isPrimary: true })
   public atividadeId: number
 
-  @column({ isPrimary: false })
-  public participanteId: number
+  @column({ isPrimary: true, columnName: 'participante_id' })
+  public userId: number
 
   @belongsTo(() => Atividade)
   public atividade: BelongsTo<typeof Atividade>
